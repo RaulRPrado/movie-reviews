@@ -41,7 +41,6 @@ def ExtractRogerEbertReview(url):
 
     return review
 
-
 if __name__=="__main__":
 
     for movie in movies:
