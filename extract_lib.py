@@ -8,7 +8,7 @@ def ReviewUrl(source, movie):
     if source == 'RogerEbert':
         return RogerEbertReviewUrl(movie)
     elif source == 'HollywoodReporter':
-        return HollywoodReporterReviewUrl(source, movie)
+        return HollywoodReporterReviewUrl(movie)
     else:
         return ''
 
@@ -32,8 +32,8 @@ def GoogleSearchUrl(source, text):
 
 
 # HollywoodReporter
-def HollywoodReporterReviewUrl(source, movie):
-    searchUrl = GoogleSearchUrl(source, movie)
+def HollywoodReporterReviewUrl(movie):
+    searchUrl = GoogleSearchUrl('HollywoodReporter', movie)
     logging.info('Google Search - ' + searchUrl)
 
     content = requests.get(searchUrl).text
@@ -66,8 +66,8 @@ def ExtractHollywoodReporterReview(url):
     return review
 
 # RogerEbert
-def RogerEbertReviewUrl(source, movie):
-    searchUrl = GoogleSearchUrl(source, movie)
+def RogerEbertReviewUrl(movie):
+    searchUrl = GoogleSearchUrl('RogerEbert', movie)
     logging.info('Google Search - ' + searchUrl)
 
     content = requests.get(searchUrl).text
