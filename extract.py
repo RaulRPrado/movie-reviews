@@ -1,30 +1,41 @@
 import logging
+import argparse
 from os import path
 
 from extract_lib import ExtractReview, ReviewUrl
 
 logging.basicConfig(level=logging.INFO)
 
+parser = argparse.ArgumentParser()
+
+parser.add_argument(
+    "--src",
+    default=None,
+    type=str,
+    choices=['RogerEbert', 'HollywoodReporter']
+)
+parser.add_argument(
+    "--max",
+    default=1500,
+    type=int
+)
+
+
 if __name__=="__main__":
 
-    maxMovies = 10
-    source = 'HollywoodReporter'
-
-    if source not in ['RogerEbert', 'HollywoodReporter']:
-        logging.error('Source is invalid')
-        exit()
+    args = parser.parse_args()
 
     with open('movies.dat', 'r') as file:
 
         count = 0
         for row in file:
             movie = row.rstrip('\n').replace('/', '')
-            if count >= maxMovies:
+            if count >= args.max:
                 break
 
             logging.info(movie)
 
-            dirName = 'reviews/' + source + '/'
+            dirName = 'reviews/' + args.src + '/'
             fileName = dirName + movie + '.txt'
             fileNameError = dirName + movie + '_ERROR.txt'
             if path.exists(fileName):
@@ -35,7 +46,7 @@ if __name__=="__main__":
                 logging.info('Error file already exists')
                 continue
 
-            url = ReviewUrl(source, movie)
+            url = ReviewUrl(args.src, movie)
             if len(url) < 10:
                 msg = 'Url is invalid - error {}'.format(movie)
                 logging.error(msg)
@@ -43,7 +54,7 @@ if __name__=="__main__":
                     f.write(msg)
                 continue
 
-            review = ExtractReview(source, url)
+            review = ExtractReview(args.src, url)
 
             # print(review)
             # count += 1
