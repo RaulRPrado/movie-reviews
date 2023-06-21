@@ -9,6 +9,8 @@ def ReviewUrl(source, movie):
         return RogerEbertReviewUrl(movie)
     elif source == 'HollywoodReporter':
         return HollywoodReporterReviewUrl(movie)
+    elif source == 'EW':
+        return EWReviewUrl(movie)
     else:
         return ''
 
@@ -17,6 +19,8 @@ def ExtractReview(source, url):
         return ExtractRogerEbertReview(url)
     elif source == 'HollywoodReporter':
         return ExtractHollywoodReporterReview(url)
+    elif source == 'EW':
+        return ExtractEWReview(url)
     else:
         return ''
 
@@ -25,6 +29,8 @@ def GoogleSearchUrl(source, text):
         words = (text + ' roger ebert movie review').split(' ')
     elif source == 'HollywoodReporter':
         words = (text + ' hollywood reporter movie review').split(' ')
+    elif source == 'EW':
+        words = (text + ' entertainment weekly movie review').split(' ')
     else:
         return ''
     search_words = "+".join(words)
@@ -82,6 +88,33 @@ def RogerEbertReviewUrl(movie):
     return url
 
 def ExtractRogerEbertReview(url):
+    page = requests.get(url).content
+    soup = BeautifulSoup(page, "html.parser")
+    blocks = soup.find_all('section', {'class': 'page-content--block_editor-content js--reframe'})
+
+    review = ''
+    for block in blocks:
+        review += ' ' + block.get_text()
+
+    return review
+
+# EntertainmentWeekly
+def EWReviewUrl(movie):
+    searchUrl = GoogleSearchUrl('EW', movie)
+    logging.info('Google Search - ' + searchUrl)
+
+    content = requests.get(searchUrl).text
+    url_start_index = content.find('https://ew.com/movies/movie-reviews/')
+    start_content = content[url_start_index:]
+
+    url_end_index = start_content.find('&')
+    url = start_content[:url_end_index]
+
+    logging.info('Entertainment Weekly Url - ' + url)
+
+    return url
+
+def ExtractEWReview(url):
     page = requests.get(url).content
     soup = BeautifulSoup(page, "html.parser")
     blocks = soup.find_all('section', {'class': 'page-content--block_editor-content js--reframe'})
