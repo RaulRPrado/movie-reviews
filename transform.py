@@ -1,3 +1,4 @@
+import spacy
 from os import path
 
 from utils import getMovieName, getReviewFileName
