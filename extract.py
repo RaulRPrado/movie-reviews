@@ -3,6 +3,7 @@ import argparse
 from os import path
 
 from extract_lib import ExtractReview, ReviewUrl
+from utils import getReviewFileName, getReviewFileNameError, getMovieName
 
 logging.basicConfig(level=logging.INFO)
 
@@ -31,15 +32,14 @@ if __name__=="__main__":
 
         count = 0
         for row in file:
-            movie = row.rstrip('\n').replace('/', '')
+            movie = getMovieName(row)
             if count >= args.max:
                 break
 
             logging.info(movie)
 
-            dirName = 'reviews/' + args.src + '/'
-            fileName = dirName + movie + '.txt'
-            fileNameError = dirName + movie + '_ERROR.txt'
+            fileName = getReviewFileName(args.src, movie)
+            fileNameError = getReviewFileNameError(args.src, movie)
             if path.exists(fileName):
                 logging.info('Review already exists')
                 continue
