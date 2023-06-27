@@ -8,6 +8,7 @@ dependencies:
   - beautifulsoup4
   - pandas
   - spacy
+  - scikit-learn
 
 # cheatsheet
 # create: conda env create -f environment.yml
