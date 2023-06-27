@@ -33,7 +33,8 @@ if __name__=="__main__":
         count = 0
         for row in file:
             movie = getMovieName(row)
-            if count >= 100:
+            print(movie)
+            if count >= 300:
                 break
 
             reviews = ''
@@ -49,22 +50,25 @@ if __name__=="__main__":
             tokens = [token.lemma_.lower().replace(' ', '').replace('\n', '') for token in nlp(reviews)]
             words = [removePunctuationFromWord(t, punctuation) for t in tokens if t not in stop and t not in punctuation and len(t) > 2 and '\n' not in t and not t.isnumeric()]
 
-            movieWords[movie] = words
-            bagWords += words
+            movieWords[movie] = ' '.join(words)
+            bagWords.append(movieWords[movie])
             # print(words)
 
-    # print(bagWords)
+    print(bagWords[0])
+    print(bagWords[3])
     # print(len(bagWords))
 
     vectorizer = TfidfVectorizer(
         analyzer='word',
         stop_words='english',
         strip_accents='ascii',
-        max_features=100)
+        max_features=2000,
+        max_df=0.5,
+        min_df=0.2)
 
     vectorizer.fit(bagWords)
 
-    data = vectorizer.transform([' '.join(v) for (k, v) in movieWords.items()])
+    data = vectorizer.transform([v for (k, v) in movieWords.items()])
 
     tfidf_tokens = vectorizer.get_feature_names_out()
 
@@ -82,10 +86,14 @@ if __name__=="__main__":
             features.pop(max_key)
         return scores
 
+    count = 0
     for (mov, feat) in max_df.items():
+        if count > 5:
+            break
         print(mov)
-        print(findMaxScores(feat))
+        print(findMaxScores(feat, 20))
         print()
+        count += 1
 
     #for t in tfidf_tokens:
     #    print(t)
